@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="smp:jar2">
+    <output-path>$PROJECT_DIR$/../../MinecraftTestServers/smp/plugins</output-path>
+    <root id="archive" name="smp.jar">
+      <element id="module-output" name="smp" />
+    </root>
+  </artifact>
+</component>
