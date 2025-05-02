@@ -17,9 +17,13 @@ public class ProjectileUtils {
     private static final Random random = new Random();
 
     public static void createCustomProjectile(Plugin plugin, Player shooter, Particle trail, int despawnTime,
-                                              boolean isOnFire, boolean makesExplosion, float explosionStrength, boolean sculkEffect) {
+                                              boolean isOnFire, boolean makesExplosion, float explosionStrength,
+                                              boolean sculkEffect, double speed, double damage) {
         Arrow arrow = shooter.launchProjectile(Arrow.class);
         arrow.setMetadata("custom_projectile", new FixedMetadataValue(plugin, true));
+
+        // Set the speed of the projectile
+        arrow.setVelocity(shooter.getLocation().getDirection().multiply(speed));
 
         if (isOnFire) {
             arrow.setFireTicks(Integer.MAX_VALUE);
@@ -78,14 +82,11 @@ public class ProjectileUtils {
                             }
                         }
                     }
+                }
 
-                    for (Entity entity : world.getNearbyEntities(hitLocation, 4, 4, 4)) {
-                        if (entity instanceof LivingEntity livingEntity && !(entity instanceof Player)) {
-                            livingEntity.setVelocity(livingEntity.getLocation().toVector()
-                                    .subtract(hitLocation.toVector()).normalize().multiply(1.5));
-                            livingEntity.damage(random.nextInt(5) + 2);
-                        }
-                    }
+                // Apply damage to entities
+                if (event.getHitEntity() instanceof LivingEntity livingEntity) {
+                    livingEntity.damage(damage, shooter);
                 }
 
                 arrow.remove();

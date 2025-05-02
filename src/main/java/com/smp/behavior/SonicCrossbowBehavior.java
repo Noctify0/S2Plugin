@@ -46,7 +46,7 @@ public class SonicCrossbowBehavior implements Listener {
         com.smp.utils.CooldownUtils.setCooldown(playerId, "sonic_crossbow", 20);
 
         // Create custom projectile
-        ProjectileUtils.createCustomProjectile(plugin, player, Particle.SONIC_BOOM, 3, false, true, 3.0F, true);
+        ProjectileUtils.createCustomProjectile(plugin, player, Particle.SONIC_BOOM, 3, false, true, 3.0F, true, 2.0, 5.0);
 
         event.setCancelled(true);
     }
