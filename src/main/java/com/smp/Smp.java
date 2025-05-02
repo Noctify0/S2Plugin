@@ -57,7 +57,8 @@ public final class Smp extends JavaPlugin implements Listener {
         Bukkit.addRecipe(GoldenHead.getRecipe(customItems.get("player_head")));
         Bukkit.addRecipe(SonicCrossbow.getRecipe());
 
-        // Make the item only craftable once
+        // Configure crafting limits directly in the code
+        // Configure crafting limits directly in the code
         OneTimeCraftRegistry.registerItem("strength_gauntlet", Material.DIAMOND_SWORD, 2556);
         OneTimeCraftRegistry.registerItem("excalibur", Material.NETHERITE_SWORD, 333);
         OneTimeCraftRegistry.registerItem("dragon_katana", Material.NETHERITE_SWORD, 3456);
