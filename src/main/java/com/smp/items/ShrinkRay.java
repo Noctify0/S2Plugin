@@ -1,5 +1,6 @@
 package com.smp.items;
 
+import com.smp.utils.OneTimeCraftUtils;
 import org.bukkit.*;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -48,6 +49,9 @@ public class ShrinkRay {
         recipe.setIngredient('D', Material.DIAMOND_BLOCK);
         recipe.setIngredient('S', Material.NETHER_STAR);
         recipe.setIngredient('T', Material.REDSTONE_TORCH);
+
+        OneTimeCraftUtils.markAsOneTimeCraft("shrink_ray", Material.PAPER, 266);
+
         return recipe;
     }
 }

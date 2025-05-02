@@ -1,5 +1,6 @@
 package com.smp.behavior;
 
+import com.smp.utils.CooldownUtils;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -19,7 +20,6 @@ import java.util.UUID;
 
 public class ExcaliburBehavior implements Listener {
 
-    private final Map<UUID, Long> cooldowns = new HashMap<>();
     private final Map<UUID, Integer> activeHits = new HashMap<>();
 
     @EventHandler
@@ -37,19 +37,18 @@ public class ExcaliburBehavior implements Listener {
         }
 
         UUID playerId = player.getUniqueId();
-        long now = System.currentTimeMillis();
+        String ability = "ExcaliburInvincibility";
+        int cooldownTime = 45; // Cooldown in seconds
 
         // Check cooldown
-        if (cooldowns.containsKey(playerId)) {
-            long timeLeft = (45000 - (now - cooldowns.get(playerId))) / 1000;
-            if (timeLeft > 0) {
-                player.sendMessage(ChatColor.RED + "Invincibility is on cooldown! Time left: " + timeLeft + " seconds.");
-                return;
-            }
+        if (CooldownUtils.isOnCooldown(playerId, ability)) {
+            double timeLeft = CooldownUtils.getRemainingCooldown(playerId, ability);
+            player.sendMessage(ChatColor.RED + "Invincibility is on cooldown! Time left: " + String.format("%.1f", timeLeft) + " seconds.");
+            return;
         }
 
         // Activate invincibility
-        cooldowns.put(playerId, now);
+        CooldownUtils.setCooldown(playerId, ability, cooldownTime);
         activeHits.put(playerId, 3);
 
         new BukkitRunnable() {

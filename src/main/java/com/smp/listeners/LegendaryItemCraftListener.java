@@ -1,10 +1,9 @@
 package com.smp.listeners;
 
 import com.smp.Smp;
-import com.smp.util.OneTimeCraftRegistry;
+import com.smp.utils.OneTimeCraftUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -14,8 +13,6 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.List;
 
 public class LegendaryItemCraftListener implements Listener {
 
@@ -35,7 +32,7 @@ public class LegendaryItemCraftListener implements Listener {
         Bukkit.getLogger().info("Crafting attempt: " + result.getType() + " with CustomModelData: " +
                 (result.getItemMeta() != null && result.getItemMeta().hasCustomModelData() ? result.getItemMeta().getCustomModelData() : "none"));
 
-        for (OneTimeCraftRegistry.OneTimeCraftItem item : OneTimeCraftRegistry.getRegisteredItems().values()) {
+        for (OneTimeCraftUtils.OneTimeCraftItem item : OneTimeCraftUtils.getRegisteredItems().values()) {
             if (isLegendaryItem(result, item) && config.getBoolean(item.getName() + "_crafted")) {
                 event.getInventory().setResult(null);
                 Bukkit.getLogger().info("Blocked crafting of " + item.getName() + ".");
@@ -53,7 +50,7 @@ public class LegendaryItemCraftListener implements Listener {
 
         Player player = (Player) event.getWhoClicked();
 
-        for (OneTimeCraftRegistry.OneTimeCraftItem item : OneTimeCraftRegistry.getRegisteredItems().values()) {
+        for (OneTimeCraftUtils.OneTimeCraftItem item : OneTimeCraftUtils.getRegisteredItems().values()) {
             if (isLegendaryItem(result, item) && !config.getBoolean(item.getName() + "_crafted")) {
                 handleLegendaryCraft(player, item);
                 return;
@@ -61,12 +58,12 @@ public class LegendaryItemCraftListener implements Listener {
         }
     }
 
-    private boolean isLegendaryItem(ItemStack item, OneTimeCraftRegistry.OneTimeCraftItem registeredItem) {
+    private boolean isLegendaryItem(ItemStack item, OneTimeCraftUtils.OneTimeCraftItem registeredItem) {
         ItemMeta meta = item.getItemMeta();
         return meta != null && item.getType() == registeredItem.getType() && meta.getCustomModelData() == registeredItem.getCustomModelData();
     }
 
-    private void handleLegendaryCraft(Player player, OneTimeCraftRegistry.OneTimeCraftItem item) {
+    private void handleLegendaryCraft(Player player, OneTimeCraftUtils.OneTimeCraftItem item) {
         FileConfiguration config = plugin.getConfig();
         config.set(item.getName() + "_crafted", true);
         plugin.saveConfig();

@@ -1,5 +1,6 @@
 package com.smp.items;
 
+import com.smp.utils.OneTimeCraftUtils;
 import org.bukkit.*;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -41,6 +42,9 @@ public class HeartBlade {
         recipe.setIngredient('A', Material.GOLDEN_APPLE);
         recipe.setIngredient('N', Material.NETHERITE_SWORD);
         recipe.setIngredient('R', Material.RED_DYE);
+
+        OneTimeCraftUtils.markAsOneTimeCraft("heart_blade", Material.NETHERITE_SWORD, 5545);
+
         return recipe;
     }
 }

@@ -3,7 +3,6 @@ package com.smp;
 import com.smp.behavior.*;
 import com.smp.items.*;
 import com.smp.listeners.LegendaryItemCraftListener;
-import com.smp.util.OneTimeCraftRegistry;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,21 +13,20 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 
-public final class Smp extends JavaPlugin implements Listener {
+public final class  Smp extends JavaPlugin implements Listener {
 
-    private final Map<UUID, Long> earthquakeCooldown = new HashMap<>();
-    private final Map<UUID, Long> dashCooldown = new HashMap<>();
+    private static Smp instance;
     private final Map<String, ItemStack> customItems = new HashMap<>();
-    private final Map<UUID, Long> teleportCooldown = new HashMap<>();
 
     @Override
     public void onEnable() {
+        instance = this; // Initialize the instance variable
         saveDefaultConfig();
 
         // Register behaviors
         Bukkit.getPluginManager().registerEvents(new ExcaliburBehavior(), this);
-        Bukkit.getPluginManager().registerEvents(new StrengthGauntletBehavior(earthquakeCooldown, dashCooldown, this), this);
-        Bukkit.getPluginManager().registerEvents(new DragonKatanaBehavior(teleportCooldown, this), this);
+        Bukkit.getPluginManager().registerEvents(new StrengthGauntletBehavior(this), this);
+        Bukkit.getPluginManager().registerEvents(new DragonKatanaBehavior(this), this);
         Bukkit.getPluginManager().registerEvents(new SmeltersPickaxeBehavior(), this);
         Bukkit.getPluginManager().registerEvents(new HeartBladeBehavior(this), this);
         getServer().getPluginManager().registerEvents(new PlayerHeadBehavior(this), this);
@@ -36,6 +34,7 @@ public final class Smp extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new ShrinkRayBehavior(this), this);
         Bukkit.getPluginManager().registerEvents(new LegendaryItemCraftListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SonicCrossbowBehavior(this), this);
+        Bukkit.getPluginManager().registerEvents(new PistolBehavior(), this);
 
         // Register custom items
         customItems.put("excalibur", Excalibur.createItem());
@@ -47,6 +46,8 @@ public final class Smp extends JavaPlugin implements Listener {
         customItems.put("golden_head", GoldenHead.createItem());
         customItems.put("shrink_ray", ShrinkRay.createItem());
         customItems.put("sonic_crossbow", SonicCrossbow.createItem());
+        customItems.put("pistol", Pistol.createItem());
+        customItems.put("bullet", Bullet.createItem());
 
         // Add recipes to the game
         Bukkit.addRecipe(Excalibur.getRecipe());
@@ -56,23 +57,18 @@ public final class Smp extends JavaPlugin implements Listener {
         Bukkit.addRecipe(ShrinkRay.getRecipe());
         Bukkit.addRecipe(GoldenHead.getRecipe(customItems.get("player_head")));
         Bukkit.addRecipe(SonicCrossbow.getRecipe());
-
-        // Configure crafting limits directly in the code
-        // Configure crafting limits directly in the code
-        OneTimeCraftRegistry.registerItem("strength_gauntlet", Material.DIAMOND_SWORD, 2556);
-        OneTimeCraftRegistry.registerItem("excalibur", Material.NETHERITE_SWORD, 333);
-        OneTimeCraftRegistry.registerItem("dragon_katana", Material.NETHERITE_SWORD, 3456);
-        OneTimeCraftRegistry.registerItem("heart_blade", Material.NETHERITE_SWORD, 5545);
-        OneTimeCraftRegistry.registerItem("shrink_ray", Material.PAPER, 266);
-        OneTimeCraftRegistry.registerItem("sonic_crossbow", Material.CROSSBOW, 566);
-
-        NamespacedKey heartBladeKey = new NamespacedKey(this, "heart_blade");
-        Bukkit.addRecipe(HeartBlade.getRecipe(heartBladeKey));
+        Bukkit.addRecipe(Pistol.getRecipe(new NamespacedKey(this, "pistol"))); // Register Pistol recipe
+        Bukkit.addRecipe(Bullet.getRecipe(new NamespacedKey(this, "bullet"))); // Register Bullet recipe
+        Bukkit.addRecipe(HeartBlade.getRecipe(new NamespacedKey(this, "heart_blade")));
 
         getLogger().info("Custom Items plugin has been enabled!");
     }
 
-        @Override
+    public static Smp getInstance() {
+        return instance; // Provide access to the instance
+    }
+
+    @Override
     public void onDisable() {
         getLogger().info("Custom items plugin disabled!");
     }
@@ -95,9 +91,7 @@ public final class Smp extends JavaPlugin implements Listener {
                 if (args.length == 0) {
                     // Reload everything
                     reloadConfig();
-                    earthquakeCooldown.clear();
-                    dashCooldown.clear();
-                    teleportCooldown.clear();
+                    com.smp.utils.CooldownUtils.clearAllCooldowns();
                     player.sendMessage(ChatColor.GREEN + "Plugin reloaded! Config and cooldowns have been reset.");
                 } else if (args.length == 1) {
                     switch (args[0].toLowerCase()) {
@@ -106,11 +100,7 @@ public final class Smp extends JavaPlugin implements Listener {
                             player.sendMessage(ChatColor.GREEN + "Config reloaded!");
                         }
                         case "cooldowns" -> {
-                            earthquakeCooldown.clear();
-                            dashCooldown.clear();
-                            teleportCooldown.clear();
-                            ShrinkRayBehavior shrinkRayBehavior = new ShrinkRayBehavior(this);
-                            shrinkRayBehavior.resetCooldowns();
+                            com.smp.utils.CooldownUtils.clearAllCooldowns();
                             player.sendMessage(ChatColor.GREEN + "All cooldowns have been reset!");
                         }
                         default -> {

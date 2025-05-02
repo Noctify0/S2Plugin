@@ -1,5 +1,6 @@
 package com.smp.items;
 
+import com.smp.utils.OneTimeCraftUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemFlag;
@@ -55,6 +56,9 @@ public class Excalibur {
         recipe.setIngredient('N', Material.NETHERITE_SWORD);
         recipe.setIngredient('E', Material.ENCHANTED_GOLDEN_APPLE);
         recipe.setIngredient('C', Material.BEACON);
+
+        // Mark as a one-time craft
+        OneTimeCraftUtils.markAsOneTimeCraft("excalibur", Material.NETHERITE_SWORD, 333);
 
         return recipe;
     }

@@ -1,5 +1,6 @@
 package com.smp.items;
 
+import com.smp.utils.OneTimeCraftUtils;
 import org.bukkit.*;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -7,6 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 
 public class DragonKatana {
+
     public static ItemStack createItem() {
         ItemStack dragonKatana = new ItemStack(Material.NETHERITE_SWORD);
         ItemMeta meta = dragonKatana.getItemMeta();
@@ -40,6 +42,10 @@ public class DragonKatana {
         recipe.setIngredient('N', Material.NETHERITE_INGOT);
         recipe.setIngredient('S', Material.NETHERITE_SWORD);
         recipe.setIngredient('D', Material.DRAGON_EGG);
+
+        // Mark as a one-time craft
+        OneTimeCraftUtils.markAsOneTimeCraft("dragon_katana", Material.NETHERITE_SWORD, 3456);
+
         return recipe;
     }
 }

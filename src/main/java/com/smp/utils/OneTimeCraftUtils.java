@@ -1,11 +1,11 @@
-package com.smp.util;
+package com.smp.utils;
 
 import org.bukkit.Material;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class OneTimeCraftRegistry {
+public class OneTimeCraftUtils {
 
     private static final Map<String, OneTimeCraftItem> registeredItems = new HashMap<>();
     private static final Map<String, Integer> craftCount = new HashMap<>();
@@ -13,6 +13,14 @@ public class OneTimeCraftRegistry {
     public static void registerItem(String name, Material type, int customModelData) {
         registeredItems.put(name, new OneTimeCraftItem(name, type, customModelData));
         craftCount.put(name, 0); // Initialize craft count
+    }
+
+    public static void markAsOneTimeCraft(String name, Material type, int customModelData) {
+        registerItem(name, type, customModelData);
+    }
+
+    public static boolean isOneTimeCraft(String name) {
+        return registeredItems.containsKey(name);
     }
 
     public static OneTimeCraftItem getItem(String name) {
@@ -25,14 +33,6 @@ public class OneTimeCraftRegistry {
 
     public static int getCraftCount(String name) {
         return craftCount.getOrDefault(name, 0);
-    }
-
-    public static void incrementCraftCount(String name) {
-        craftCount.put(name, getCraftCount(name) + 1);
-    }
-
-    public static void resetCraftCount(String name) {
-        craftCount.put(name, 0);
     }
 
     public static class OneTimeCraftItem {

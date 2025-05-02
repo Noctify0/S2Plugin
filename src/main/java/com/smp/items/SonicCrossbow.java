@@ -1,5 +1,6 @@
 package com.smp.items;
 
+import com.smp.utils.OneTimeCraftUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -51,6 +52,8 @@ public class SonicCrossbow {
         recipe.setIngredient('C', Material.CROSSBOW);
         recipe.setIngredient('D', Material.MUSIC_DISC_5);
         recipe.setIngredient('S', Material.ECHO_SHARD);
+
+        OneTimeCraftUtils.markAsOneTimeCraft("sonic_crossbow", Material.CROSSBOW, 566);
 
         return recipe;
     }

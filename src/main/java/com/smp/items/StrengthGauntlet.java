@@ -1,5 +1,6 @@
 package com.smp.items;
 
+import com.smp.utils.OneTimeCraftUtils;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.*;
@@ -47,6 +48,9 @@ public class StrengthGauntlet {
         recipe.setIngredient('A', Material.DIAMOND_AXE);
         recipe.setIngredient('Z', Material.NETHER_STAR);
         recipe.setIngredient('S', Material.SPAWNER);
+
+        OneTimeCraftUtils.markAsOneTimeCraft("strength_gauntlets", Material.DIAMOND_SWORD, 2556);
+
         return recipe;
     }
 }
