@@ -1,0 +1,69 @@
+name: EntitySize
+version: '1.6.1'
+main: com.maximde.entitysize.EntitySize
+author: MaximDe
+description: Change the size of an entity
+api-version: '1.20'
+
+commands:
+  entitysize:
+
+permissions:
+  entitysize.commands:
+    description: Allows the use of the entitysize command
+    default: true
+  entitysize.player:
+    description: Allows the use of the player subcommand
+    default: op
+    op: true
+  entitysize.entity:
+    description: Allows the use of the entity subcommand
+    default: op
+    op: true
+  entitysize.reload:
+    description: Allows the use of the reload subcommand
+    default: op
+    op: true
+  entitysize.reset:
+    description: Allows the use of the reset subcommand
+    default: true
+  entitysize.reset.player:
+    description: Allows the ability to reset any player
+    default: op
+    op: true
+  entitysize.reset.all:
+    description: Allows the ability to reset all players, using @a
+    default: op
+    op: true
+  entitysize.self:
+    description: Allows the use of the self subcommand
+    default: true
+  entitysize.entity.looking:
+    description: Allows selecting the entity being looked at
+    default: op
+    op: true
+  entitysize.entity.tag:
+    description: Allows selecting the entity by tag
+    default: op
+    op: true
+  entitysize.entity.name:
+    description: Allows selecting the entity by name
+    default: op
+    op: true
+  entitysize.entity.uuid:
+    description: Allows selecting the entity by uuid
+    default: op
+    op: true
+  entitysize.entity.range:
+    description: Allows selecting the entity by range
+    default: op
+    op: true
+  entitysize.sizelimit.bypass:
+    description: Allows bypassing size limits
+    default: op
+    op: true
+  entitysize.add:
+    description: Allows the player to use /entitysize add
+    default: op
+    op: true
+

@@ -23,7 +23,8 @@ public class StrengthGauntlet {
                     "§81ᴍ ᴄᴏᴏʟᴅᴏᴡɴ",
                     "§fʜᴏᴍᴇʀᴜɴ: §720% ᴄʜᴀɴᴄᴇ ᴛᴏ ᴋɴᴏᴄᴋ ᴀ ᴘʟᴀʏᴇʀ ᴜᴘ ɪɴ ᴛʜᴇ ᴀɪʀ",
                     "§fᴅᴀꜱʜ: §7ʀɪɢʜᴛ ᴄʟɪᴄᴋ ᴛᴏ ᴅᴀꜱʜ ꜰᴏʀᴡᴀʀᴅ",
-                    "§810ꜱ ᴄᴏᴏʟᴅᴏᴡɴ"
+                    "§810ꜱ ᴄᴏᴏʟᴅᴏᴡɴ",
+                    ""
             ));
             meta.setCustomModelData(2556);
             meta.setUnbreakable(true);

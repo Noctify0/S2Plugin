@@ -79,5 +79,12 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/authlib-1.5.21.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>com.entitysize</groupId>
+            <artifactId>EntitySizeAPI</artifactId>
+            <version>1.6.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/EntitySize-1.6.1.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>

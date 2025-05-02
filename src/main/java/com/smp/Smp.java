@@ -3,6 +3,7 @@ package com.smp;
 import com.smp.behavior.*;
 import com.smp.items.*;
 import com.smp.listeners.LegendaryItemCraftListener;
+import com.smp.util.OneTimeCraftRegistry;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -24,6 +25,7 @@ public final class Smp extends JavaPlugin implements Listener {
     public void onEnable() {
         saveDefaultConfig();
 
+        // Register behaviors
         Bukkit.getPluginManager().registerEvents(new ExcaliburBehavior(), this);
         Bukkit.getPluginManager().registerEvents(new StrengthGauntletBehavior(earthquakeCooldown, dashCooldown, this), this);
         Bukkit.getPluginManager().registerEvents(new DragonKatanaBehavior(teleportCooldown, this), this);
@@ -31,22 +33,37 @@ public final class Smp extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new HeartBladeBehavior(this), this);
         getServer().getPluginManager().registerEvents(new PlayerHeadBehavior(this), this);
         Bukkit.getPluginManager().registerEvents(new GoldenHeadBehavior(), this);
-
+        Bukkit.getPluginManager().registerEvents(new ShrinkRayBehavior(this), this);
         Bukkit.getPluginManager().registerEvents(new LegendaryItemCraftListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new SonicCrossbowBehavior(this), this);
 
+        // Register custom items
         customItems.put("excalibur", Excalibur.createItem());
         customItems.put("strength_gauntlet", StrengthGauntlet.createItem());
         customItems.put("dragon_katana", DragonKatana.createItem());
         customItems.put("smelters_pickaxe", SmeltersPickaxe.createItem());
         customItems.put("heart_blade", HeartBlade.createItem());
         customItems.put("player_head", PlayerHead.createItem());
-        customItems.put("golden_head", GoldenHead.createItem()); // Added Golden Head
+        customItems.put("golden_head", GoldenHead.createItem());
+        customItems.put("shrink_ray", ShrinkRay.createItem());
+        customItems.put("sonic_crossbow", SonicCrossbow.createItem());
 
+        // Add recipes to the game
         Bukkit.addRecipe(Excalibur.getRecipe());
         Bukkit.addRecipe(StrengthGauntlet.getRecipe());
         Bukkit.addRecipe(DragonKatana.getRecipe());
         Bukkit.addRecipe(SmeltersPickaxe.getRecipe());
+        Bukkit.addRecipe(ShrinkRay.getRecipe());
         Bukkit.addRecipe(GoldenHead.getRecipe(customItems.get("player_head")));
+        Bukkit.addRecipe(SonicCrossbow.getRecipe());
+
+        // Make the item only craftable once
+        OneTimeCraftRegistry.registerItem("strength_gauntlet", Material.DIAMOND_SWORD, 2556);
+        OneTimeCraftRegistry.registerItem("excalibur", Material.NETHERITE_SWORD, 333);
+        OneTimeCraftRegistry.registerItem("dragon_katana", Material.NETHERITE_SWORD, 3456);
+        OneTimeCraftRegistry.registerItem("heart_blade", Material.NETHERITE_SWORD, 5545);
+        OneTimeCraftRegistry.registerItem("shrink_ray", Material.PAPER, 266);
+        OneTimeCraftRegistry.registerItem("sonic_crossbow", Material.CROSSBOW, 566);
 
         NamespacedKey heartBladeKey = new NamespacedKey(this, "heart_blade");
         Bukkit.addRecipe(HeartBlade.getRecipe(heartBladeKey));
@@ -91,6 +108,8 @@ public final class Smp extends JavaPlugin implements Listener {
                             earthquakeCooldown.clear();
                             dashCooldown.clear();
                             teleportCooldown.clear();
+                            ShrinkRayBehavior shrinkRayBehavior = new ShrinkRayBehavior(this);
+                            shrinkRayBehavior.resetCooldowns();
                             player.sendMessage(ChatColor.GREEN + "All cooldowns have been reset!");
                         }
                         default -> {
@@ -148,7 +167,7 @@ public final class Smp extends JavaPlugin implements Listener {
                 player.sendMessage(ChatColor.GREEN + "Gave " + count + "x " + itemId + " to " + targets.size() + " player(s).");
             }
             default -> {
-                return false; // Command not recognized
+                return false;
             }
         }
 

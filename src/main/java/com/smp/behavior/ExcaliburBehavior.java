@@ -51,7 +51,6 @@ public class ExcaliburBehavior implements Listener {
         // Activate invincibility
         cooldowns.put(playerId, now);
         activeHits.put(playerId, 3);
-        player.sendMessage(ChatColor.AQUA + "Invincibility activated!");
 
         new BukkitRunnable() {
             double duration = 10.0; // 10 seconds
@@ -81,7 +80,7 @@ public class ExcaliburBehavior implements Listener {
 
         int hitsLeft = activeHits.get(playerId);
         if (hitsLeft > 0) {
-            event.setCancelled(true);
+            event.setCancelled(true); // Cancel all types of damage
             activeHits.put(playerId, hitsLeft - 1);
 
             if (hitsLeft - 1 <= 0) {

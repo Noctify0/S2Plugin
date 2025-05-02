@@ -51,7 +51,6 @@ public class StrengthGauntletBehavior implements Listener {
             }
 
             earthquakeCooldown.put(playerId, now);
-            player.sendMessage("§eEarthquake activated!");
             Location center = player.getLocation();
             int radius = 20;
             World world = player.getWorld();

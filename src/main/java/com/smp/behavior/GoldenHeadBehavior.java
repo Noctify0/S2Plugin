@@ -1,6 +1,6 @@
 package com.smp.behavior;
 
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,25 +35,37 @@ public class GoldenHeadBehavior implements Listener {
                 return;
             }
 
-            // Prevent usage if another player is using a Golden Head
-            if (!activeUsers.isEmpty()) {
-                player.sendMessage(ChatColor.RED + "Another player is already using a Golden Head!");
-                event.setCancelled(true);
-                return;
-            }
-
             // Consume the item and apply effects
             item.setAmount(item.getAmount() - 1);
             activeUsers.add(player.getUniqueId());
-            player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 45 * 20, 1)); // 15 seconds of Regeneration II
-            player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 120 * 20, 0)); // 2 minutes of Absorption I
-            player.sendMessage(ChatColor.GOLD + "You consumed a Golden Head!");
+            int regenDuration = 45; // in seconds
+            int absorptionDuration = 120; // in seconds
+
+            player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, regenDuration * 20, 1)); // 45 seconds of Regeneration II
+            player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, absorptionDuration * 20, 0)); // 2 minutes of Absorption I
+
+            // Start a repeating task to update the action bar
+            new BukkitRunnable() {
+                double timeLeft = regenDuration; // Start with the regeneration duration
+
+                @Override
+                public void run() {
+                    if (timeLeft <= 0 || !activeUsers.contains(player.getUniqueId())) {
+                        this.cancel();
+                        return;
+                    }
+
+                    // Send action bar message
+                    player.sendActionBar(ChatColor.GOLD + "" + ChatColor.BOLD + "Golden Head: " + String.format("%.1fs", timeLeft));
+                    timeLeft -= 0.1; // Decrease time left by 0.1 seconds
+                }
+            }.runTaskTimerAsynchronously(player.getServer().getPluginManager().getPlugin("Smp"), 0L, 2L); // Update every 2 ticks (0.1 seconds)
 
             // Schedule removal from active users after the effect duration
             player.getServer().getScheduler().runTaskLaterAsynchronously(
                     player.getServer().getPluginManager().getPlugin("Smp"),
                     () -> activeUsers.remove(player.getUniqueId()),
-                    15 * 20L // 15 seconds
+                    regenDuration * 20L // 45 seconds
             );
         }
 

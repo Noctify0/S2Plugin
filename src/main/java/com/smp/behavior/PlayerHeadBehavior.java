@@ -42,18 +42,17 @@ public class PlayerHeadBehavior implements Listener {
             // Consume the item
             item.setAmount(item.getAmount() - 1);
 
-            // Apply golden apple effects for 1 minute
-            int duration = 15 * 20;
+            // Apply golden apple effects for 15 seconds
+            int duration = 15 * 20; // 15 seconds in ticks
             player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, duration, 1));
             player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, duration, 1));
-            player.sendMessage(ChatColor.GOLD + "You consumed the Player Head!");
 
             // Add the player to the active set
             activePlayerHeads.add(playerId);
 
             // Display bold action bar message
             new BukkitRunnable() {
-                int timeLeft = duration / 20; // Convert ticks to seconds
+                double timeLeft = duration / 20.0; // Convert ticks to seconds
 
                 @Override
                 public void run() {
@@ -62,10 +61,10 @@ public class PlayerHeadBehavior implements Listener {
                         activePlayerHeads.remove(playerId); // Remove the player when the effect ends
                         return;
                     }
-                    player.sendActionBar(ChatColor.GOLD + "§lGolden Head: " + timeLeft + "s");
-                    timeLeft--;
+                    player.sendActionBar(ChatColor.GOLD + "§lPlayer Head: " + String.format("%.1fs", timeLeft));
+                    timeLeft -= 0.1; // Decrease time left by 0.1 seconds
                 }
-            }.runTaskTimer(plugin, 0, 20); // Run every second
+            }.runTaskTimer(plugin, 0, 2); // Run every 2 ticks (0.1 seconds)
         }
     }
 }

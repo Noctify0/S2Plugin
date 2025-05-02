@@ -25,7 +25,8 @@ public class GoldenHead {
                     ChatColor.WHITE + "ᴀʙɪʟɪᴛɪᴇꜱ:",
                     ChatColor.WHITE + "ɢʀᴀɴᴅ ʜᴇᴀʟ: " + ChatColor.GRAY + "ʀɪɢʜᴛ ᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜱᴜᴍᴇ.",
                     ChatColor.GRAY + "ɢɪᴠᴇꜱ ʏᴏᴜ ᴛʜᴇ ᴇꜰꜰᴇᴄᴛꜱ ᴏꜰ ᴀ ɢᴏʟᴅᴇɴ ᴀᴘᴘʟᴇ ꜰᴏʀ 45 ꜱᴇᴄᴏɴᴅꜱ.",
-                    ChatColor.DARK_GRAY + "1 ᴛɪᴍᴇ ᴜꜱᴇ"
+                    ChatColor.DARK_GRAY + "1 ᴛɪᴍᴇ ᴜꜱᴇ",
+                    ""
             ));
             goldenHead.setItemMeta(meta);
         }

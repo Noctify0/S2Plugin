@@ -22,7 +22,8 @@ public class PlayerHead {
                     ChatColor.WHITE + "ɢʀᴀɴᴅ ʜᴇᴀʟ: " + ChatColor.GRAY + "ʀɪɢʜᴛ ᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜱᴜᴍᴇ.",
                     ChatColor.GRAY + "ɢɪᴠᴇꜱ ʏᴏᴜ ᴛʜᴇ ᴇꜰꜰᴇᴄᴛꜱ ᴏꜰ ᴀ ɢᴏʟᴅᴇɴ ᴀᴘᴘʟᴇ ꜰᴏʀ",
                     ChatColor.GRAY + "𝟣𝟧 ꜱᴇᴄᴏɴᴅꜱ.",
-                    ChatColor.DARK_GRAY + "1 ᴛɪᴍᴇ ᴜꜱᴇ"
+                    ChatColor.DARK_GRAY + "1 ᴛɪᴍᴇ ᴜꜱᴇ",
+                    ""
             ));
             meta.setUnbreakable(true);
             meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);

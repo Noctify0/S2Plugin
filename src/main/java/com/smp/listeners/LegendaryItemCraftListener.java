@@ -1,6 +1,7 @@
 package com.smp.listeners;
 
 import com.smp.Smp;
+import com.smp.util.OneTimeCraftRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -13,6 +14,8 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.List;
 
 public class LegendaryItemCraftListener implements Listener {
 
@@ -29,15 +32,15 @@ public class LegendaryItemCraftListener implements Listener {
 
         if (result == null) return;
 
-        // Check if the crafted item is one of the legendary items
-        if (isLegendaryItem(result, "strength_gauntlet") && config.getBoolean("strength_gauntlet_crafted")) {
-            event.getInventory().setResult(null);
-        } else if (isLegendaryItem(result, "excalibur") && config.getBoolean("excalibur_crafted")) {
-            event.getInventory().setResult(null);
-        } else if (isLegendaryItem(result, "dragon_katana") && config.getBoolean("dragon_katana_crafted")) {
-            event.getInventory().setResult(null);
-        } else if (isLegendaryItem(result, "heart_blade") && config.getBoolean("heart_blade_crafted")) {
-            event.getInventory().setResult(null);
+        Bukkit.getLogger().info("Crafting attempt: " + result.getType() + " with CustomModelData: " +
+                (result.getItemMeta() != null && result.getItemMeta().hasCustomModelData() ? result.getItemMeta().getCustomModelData() : "none"));
+
+        for (OneTimeCraftRegistry.OneTimeCraftItem item : OneTimeCraftRegistry.getRegisteredItems().values()) {
+            if (isLegendaryItem(result, item) && config.getBoolean(item.getName() + "_crafted")) {
+                event.getInventory().setResult(null);
+                Bukkit.getLogger().info("Blocked crafting of " + item.getName() + ".");
+                return;
+            }
         }
     }
 
@@ -50,48 +53,27 @@ public class LegendaryItemCraftListener implements Listener {
 
         Player player = (Player) event.getWhoClicked();
 
-        // Check and handle crafting of each legendary item
-        if (isLegendaryItem(result, "strength_gauntlet") && !config.getBoolean("strength_gauntlet_crafted")) {
-            handleLegendaryCraft(player, "strength_gauntlet", "Strength Gauntlet");
-        } else if (isLegendaryItem(result, "excalibur") && !config.getBoolean("excalibur_crafted")) {
-            handleLegendaryCraft(player, "excalibur", "Excalibur");
-        } else if (isLegendaryItem(result, "dragon_katana") && !config.getBoolean("dragon_katana_crafted")) {
-            handleLegendaryCraft(player, "dragon_katana", "Dragon Katana");
-        } else if (isLegendaryItem(result, "heart_blade") && !config.getBoolean("heart_blade_crafted")) {
-            handleLegendaryCraft(player, "heart_blade", "Heart Blade");
+        for (OneTimeCraftRegistry.OneTimeCraftItem item : OneTimeCraftRegistry.getRegisteredItems().values()) {
+            if (isLegendaryItem(result, item) && !config.getBoolean(item.getName() + "_crafted")) {
+                handleLegendaryCraft(player, item);
+                return;
+            }
         }
     }
 
-    private boolean isLegendaryItem(ItemStack item, String itemName) {
-        // Check if the item matches the custom item based on its type and custom model data
+    private boolean isLegendaryItem(ItemStack item, OneTimeCraftRegistry.OneTimeCraftItem registeredItem) {
         ItemMeta meta = item.getItemMeta();
-        if (meta == null) return false;
-
-        switch (itemName) {
-            case "strength_gauntlet":
-                return item.getType() == Material.DIAMOND_SWORD && meta.getCustomModelData() == 2556;
-            case "excalibur":
-                return item.getType() == Material.NETHERITE_SWORD && meta.getCustomModelData() == 333;
-            case "dragon_katana":
-                return item.getType() == Material.NETHERITE_SWORD && meta.getCustomModelData() == 3456;
-            case "heart_blade":
-                return item.getType() == Material.NETHERITE_SWORD && meta.getCustomModelData() == 5545;
-            default:
-                return false;
-        }
+        return meta != null && item.getType() == registeredItem.getType() && meta.getCustomModelData() == registeredItem.getCustomModelData();
     }
 
-    private void handleLegendaryCraft(Player player, String configKey, String itemName) {
-        // Update the config
+    private void handleLegendaryCraft(Player player, OneTimeCraftRegistry.OneTimeCraftItem item) {
         FileConfiguration config = plugin.getConfig();
-        config.set(configKey + "_crafted", true);
+        config.set(item.getName() + "_crafted", true);
         plugin.saveConfig();
 
-        // Broadcast message to the server
-        Bukkit.broadcastMessage(ChatColor.GOLD + "The " + itemName + " has been crafted by " + player.getName() +
+        Bukkit.broadcastMessage(ChatColor.GOLD + "The " + item.getName() + " has been crafted by " + player.getName() +
                 "! This legendary can not be crafted again!");
 
-        // Play sound effect to all players
         Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.8f));
     }
 }
