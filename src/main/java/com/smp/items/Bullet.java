@@ -15,7 +15,9 @@ public class Bullet {
         ItemMeta meta = bullet.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(ChatColor.GRAY + "Bullet");
-            meta.setLore(Collections.singletonList(ChatColor.DARK_GRAY + "Ammunition for the Pistol."));
+            meta.setLore(Collections.singletonList(
+                    ChatColor.DARK_GRAY + "Ammunition for the Pistol."
+            ));
             bullet.setItemMeta(meta);
         }
         return bullet;
@@ -24,8 +26,10 @@ public class Bullet {
     public static ShapedRecipe getRecipe(NamespacedKey key) {
         ItemStack bullet = createItem();
         ShapedRecipe recipe = new ShapedRecipe(key, bullet);
-        recipe.shape(" I ", " I ", " I ");
+        recipe.shape(" I ", " G ", " C ");
         recipe.setIngredient('I', Material.IRON_INGOT);
+        recipe.setIngredient('G', Material.GUNPOWDER);
+        recipe.setIngredient('C', Material.COPPER_INGOT);
         return recipe;
     }
 }

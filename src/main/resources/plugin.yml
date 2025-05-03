@@ -9,3 +9,15 @@ commands:
     description: Reloads the plugin configuration.
   cgive:
     description: Gives a custom item to the player.
+  nv:
+    description: Toggles night vision.
+    usage: /nv
+    permission: smp.nightvision
+  nightvision:
+    description: Toggles night vision.
+    usage: /nightvision
+    permission: smp.nightvision
+permissions:
+  smp.nightvision:
+    description: Allows the player to toggle night vision.
+    default: true

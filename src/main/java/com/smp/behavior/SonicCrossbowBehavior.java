@@ -1,7 +1,7 @@
 package com.smp.behavior;
 
+import com.smp.utils.CustomItemUtils;
 import com.smp.utils.ProjectileUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
@@ -26,11 +26,7 @@ public class SonicCrossbowBehavior implements Listener {
         if (!(event.getEntity() instanceof Player player)) return;
 
         ItemStack item = event.getBow();
-        if (item == null || item.getType() != Material.CROSSBOW) return;
-
-        // Check if the crossbow is the Sonic Crossbow
-        if (!item.hasItemMeta() || item.getItemMeta() == null ||
-                !item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "ꜱᴏɴɪᴄ ᴄʀᴏꜱꜱʙᴏᴡ")) return;
+        if (!CustomItemUtils.isCustomItem(item, Material.CROSSBOW, "&6ꜱᴏɴɪᴄ ᴄʀᴏꜱꜱʙᴏᴡ", 566)) return;
 
         UUID playerId = player.getUniqueId();
 

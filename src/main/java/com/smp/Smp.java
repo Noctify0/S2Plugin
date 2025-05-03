@@ -2,6 +2,7 @@ package com.smp;
 
 import com.smp.behavior.*;
 import com.smp.items.*;
+import com.smp.utils.GammaUtils;
 import com.smp.listeners.LegendaryItemCraftListener;
 import org.bukkit.*;
 import org.bukkit.command.Command;
@@ -10,6 +11,9 @@ import org.bukkit.entity.*;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.*;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 
@@ -20,7 +24,7 @@ public final class  Smp extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        instance = this; // Initialize the instance variable
+        instance = this;
         saveDefaultConfig();
 
         // Register behaviors
@@ -29,7 +33,7 @@ public final class  Smp extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new DragonKatanaBehavior(this), this);
         Bukkit.getPluginManager().registerEvents(new SmeltersPickaxeBehavior(), this);
         Bukkit.getPluginManager().registerEvents(new HeartBladeBehavior(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerHeadBehavior(this), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerHeadBehavior(this), this);
         Bukkit.getPluginManager().registerEvents(new GoldenHeadBehavior(), this);
         Bukkit.getPluginManager().registerEvents(new ShrinkRayBehavior(this), this);
         Bukkit.getPluginManager().registerEvents(new LegendaryItemCraftListener(this), this);
@@ -61,7 +65,12 @@ public final class  Smp extends JavaPlugin implements Listener {
         Bukkit.addRecipe(Bullet.getRecipe(new NamespacedKey(this, "bullet"))); // Register Bullet recipe
         Bukkit.addRecipe(HeartBlade.getRecipe(new NamespacedKey(this, "heart_blade")));
 
-        getLogger().info("Custom Items plugin has been enabled!");
+        // Register commands
+        GammaUtils gammaUtils = new GammaUtils();
+        getCommand("nv").setExecutor(gammaUtils);
+        getCommand("nightvision").setExecutor(gammaUtils);
+
+        getLogger().info(ChatColor.GREEN + "Custom items plugin enabled!");
     }
 
     public static Smp getInstance() {
@@ -76,20 +85,19 @@ public final class  Smp extends JavaPlugin implements Listener {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Only players can use this command!");
-            return true;
-        }
-
-        if (!player.isOp()) {
-            player.sendMessage("You do not have permission to use this command!");
+            sender.sendMessage(ChatColor.RED + "Only players can use this command!");
             return true;
         }
 
         String commandName = command.getName().toLowerCase();
         switch (commandName) {
             case "creload" -> {
+                if (!player.isOp()) {
+                    player.sendMessage(ChatColor.RED + "You do not have permission to use this command!");
+                    return true;
+                }
+
                 if (args.length == 0) {
-                    // Reload everything
                     reloadConfig();
                     com.smp.utils.CooldownUtils.clearAllCooldowns();
                     player.sendMessage(ChatColor.GREEN + "Plugin reloaded! Config and cooldowns have been reset.");
@@ -103,15 +111,18 @@ public final class  Smp extends JavaPlugin implements Listener {
                             com.smp.utils.CooldownUtils.clearAllCooldowns();
                             player.sendMessage(ChatColor.GREEN + "All cooldowns have been reset!");
                         }
-                        default -> {
-                            player.sendMessage(ChatColor.RED + "Invalid argument. Use /creload [config|cooldowns].");
-                        }
+                        default -> player.sendMessage(ChatColor.RED + "Invalid argument. Use /creload [config|cooldowns].");
                     }
                 } else {
                     player.sendMessage(ChatColor.RED + "Usage: /creload [config|cooldowns]");
                 }
             }
             case "cgive" -> {
+                if (!player.isOp()) {
+                    player.sendMessage(ChatColor.RED + "You do not have permission to use this command!");
+                    return true;
+                }
+
                 if (args.length < 2) {
                     player.sendMessage(ChatColor.RED + "Usage: /cgive {player} {item} [count]");
                     return true;
@@ -119,7 +130,7 @@ public final class  Smp extends JavaPlugin implements Listener {
 
                 String targetSelector = args[0];
                 String itemId = args[1].toLowerCase();
-                int count = 1; // Default to 1 if not specified
+                int count = 1;
 
                 if (args.length >= 3) {
                     try {
@@ -134,14 +145,12 @@ public final class  Smp extends JavaPlugin implements Listener {
                     }
                 }
 
-                // Resolve players
                 List<Player> targets = resolvePlayers(sender, targetSelector);
                 if (targets.isEmpty()) {
                     player.sendMessage(ChatColor.RED + "No players found for selector: " + targetSelector);
                     return true;
                 }
 
-                // Get the item
                 ItemStack item = customItems.get(itemId);
                 if (item == null) {
                     player.sendMessage(ChatColor.RED + "Item with ID '" + itemId + "' not found!");
@@ -149,13 +158,28 @@ public final class  Smp extends JavaPlugin implements Listener {
                 }
                 item.setAmount(count);
 
-                // Give the item to each target
                 for (Player target : targets) {
                     target.getInventory().addItem(item);
                     target.sendMessage(ChatColor.GOLD + "You have received " + count + "x " + itemId + "!");
                 }
 
                 player.sendMessage(ChatColor.GREEN + "Gave " + count + "x " + itemId + " to " + targets.size() + " player(s).");
+            }
+            case "nv", "nightvision" -> {
+                boolean hasNightVision = player.hasMetadata("night_vision");
+
+                if (hasNightVision) {
+                    // Disable night vision
+                    player.removeMetadata("night_vision", Smp.getInstance());
+                    player.removePotionEffect(PotionEffectType.NIGHT_VISION); // Remove night vision effect
+                    player.sendMessage(ChatColor.YELLOW + "Night vision disabled.");
+                } else {
+                    // Enable night vision
+                    player.setMetadata("night_vision", new FixedMetadataValue(Smp.getInstance(), true));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0, false, false)); // Add night vision effect
+                    player.sendMessage(ChatColor.GREEN + "Night vision enabled.");
+                }
+                return true;
             }
             default -> {
                 return false;

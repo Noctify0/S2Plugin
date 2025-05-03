@@ -1,11 +1,11 @@
 package com.smp.behavior;
 
 import com.smp.Smp;
+import com.smp.utils.CustomItemUtils;
 import com.smp.utils.ProjectileUtils;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,7 +27,8 @@ public class PistolBehavior implements Listener {
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInMainHand();
 
-        if (item == null || item.getType() != Material.FLINT || item.getItemMeta() == null || item.getItemMeta().getCustomModelData() != 6) {
+        // Use CustomItemUtils to check if the item is the custom Pistol
+        if (!CustomItemUtils.isCustomItem(item, Material.FLINT, "&6Pistol", 6)) {
             return;
         }
 
