@@ -1,6 +1,7 @@
 package com.smp.behavior;
 
 import com.smp.Smp;
+import com.smp.utils.ProjectileUtils;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -60,14 +61,23 @@ public class PistolBehavior implements Listener {
         ammo.put(playerId, currentAmmo - 1);
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.YELLOW + "Ammo: " + ammo.get(playerId) + "/" + maxAmmo));
 
-        Location loc = player.getEyeLocation().add(player.getLocation().getDirection().multiply(1.5));
-        player.getWorld().spawnParticle(Particle.FLAME, loc, 3, 0.05, 0.05, 0.05, 0.01);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
+        // Use ProjectileUtils to create a custom bullet
+        ProjectileUtils.createCustomProjectile(
+                Smp.getInstance(), // Plugin instance
+                player,            // Shooter
+                Particle.FLAME,    // Trail particle
+                5,                 // Despawn time in seconds
+                false,             // Is on fire
+                false,             // Makes explosion
+                0,                 // Explosion strength
+                false,             // Sculk effect
+                5.0,               // Speed of the bullet
+                4.0,               // Damage
+                false              // Use speed-based damage
+        );
 
-        player.getNearbyEntities(10, 10, 10).stream()
-                .filter(e -> e instanceof LivingEntity && e.getLocation().distance(player.getLocation()) < 10)
-                .findFirst()
-                .ifPresent(entity -> ((LivingEntity) entity).damage(4));
+        // Play sound for shooting
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
     }
 
     private void reload(Player player) {

@@ -18,7 +18,7 @@ public class ProjectileUtils {
 
     public static void createCustomProjectile(Plugin plugin, Player shooter, Particle trail, int despawnTime,
                                               boolean isOnFire, boolean makesExplosion, float explosionStrength,
-                                              boolean sculkEffect, double speed, double damage) {
+                                              boolean sculkEffect, double speed, double damage, boolean useSpeedBasedDamage) {
         Arrow arrow = shooter.launchProjectile(Arrow.class);
         arrow.setMetadata("custom_projectile", new FixedMetadataValue(plugin, true));
 
@@ -86,7 +86,8 @@ public class ProjectileUtils {
 
                 // Apply damage to entities
                 if (event.getHitEntity() instanceof LivingEntity livingEntity) {
-                    livingEntity.damage(damage, shooter);
+                    double finalDamage = useSpeedBasedDamage ? damage * arrow.getVelocity().length() : damage;
+                    livingEntity.damage(finalDamage, shooter);
                 }
 
                 arrow.remove();
