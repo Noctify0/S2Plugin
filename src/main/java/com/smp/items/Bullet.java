@@ -7,16 +7,18 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Collections;
+import java.util.Arrays;
 
 public class Bullet {
     public static ItemStack createItem() {
-        ItemStack bullet = new ItemStack(Material.IRON_NUGGET);
+        ItemStack bullet = new ItemStack(Material.IRON_NUGGET, 5); // Set amount to 5
         ItemMeta meta = bullet.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(ChatColor.GRAY + "Bullet");
-            meta.setLore(Collections.singletonList(
-                    ChatColor.DARK_GRAY + "Ammunition for the Pistol."
+            meta.setLore(Arrays.asList(
+                    ChatColor.DARK_GRAY + "Ammunition for the Pistol.",
+                    ChatColor.DARK_GRAY + "Crafted with precision.",
+                    ChatColor.DARK_GRAY + "Handle with care."
             ));
             bullet.setItemMeta(meta);
         }
