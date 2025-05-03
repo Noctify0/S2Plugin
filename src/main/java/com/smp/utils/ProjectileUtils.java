@@ -1,105 +1,74 @@
 package com.smp.utils;
 
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Arrow;
+import org.bukkit.Bukkit;
+import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.entity.Projectile;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.Random;
+import org.bukkit.util.Vector;
 
 public class ProjectileUtils {
 
-    private static final Random random = new Random();
-
-    public static void createCustomProjectile(Plugin plugin, Player shooter, Particle trail, int despawnTime,
-                                              boolean isOnFire, boolean makesExplosion, float explosionStrength,
-                                              boolean sculkEffect, double speed, double damage, boolean useSpeedBasedDamage) {
-        Arrow arrow = shooter.launchProjectile(Arrow.class);
-        arrow.setMetadata("custom_projectile", new FixedMetadataValue(plugin, true));
-
-        // Set the speed of the projectile
-        arrow.setVelocity(shooter.getLocation().getDirection().multiply(speed));
+    public static void createCustomProjectile(
+            Plugin plugin,
+            Player shooter,
+            Particle trailParticle,
+            int despawnTimeAfterHit, // Time in seconds after hitting something
+            boolean isOnFire,
+            boolean makesExplosion,
+            float explosionStrength,
+            boolean sculkEffect,
+            double speed,
+            double damage,
+            boolean useSpeedBasedDamage
+    ) {
+        // Spawn the projectile
+        Projectile projectile = shooter.launchProjectile(org.bukkit.entity.Snowball.class);
+        projectile.setVelocity(shooter.getLocation().getDirection().multiply(speed));
+        projectile.setShooter(shooter);
 
         if (isOnFire) {
-            arrow.setFireTicks(Integer.MAX_VALUE);
+            projectile.setFireTicks(100);
         }
 
-        // Add particle trail
+        // Add a trail effect
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (arrow.isDead() || !arrow.isValid() || arrow.isOnGround()) {
+                if (!projectile.isValid() || projectile.isDead()) {
                     cancel();
                     return;
                 }
-                Location loc = arrow.getLocation();
-                World world = loc.getWorld();
-                if (world != null) {
-                    world.spawnParticle(trail, loc, 5, 0.2, 0.2, 0.2, 0.01);
-                }
+                projectile.getWorld().spawnParticle(trailParticle, projectile.getLocation(), 1, 0, 0, 0, 0);
             }
-        }.runTaskTimer(plugin, 0, 2);
+        }.runTaskTimer(plugin, 0L, 1L);
 
-        // Schedule despawn
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!arrow.isDead()) {
-                    arrow.remove();
-                }
-            }
-        }.runTaskLater(plugin, despawnTime * 20L);
-
-        // Handle impact
+        // Listen for collision events
         Bukkit.getPluginManager().registerEvents(new org.bukkit.event.Listener() {
             @org.bukkit.event.EventHandler
-            public void onHit(org.bukkit.event.entity.ProjectileHitEvent event) {
-                if (event.getEntity() != arrow) return;
-
-                Location hitLocation = arrow.getLocation();
-                World world = hitLocation.getWorld();
-                if (world == null) return;
-
-                if (makesExplosion) {
-                    world.createExplosion(hitLocation, explosionStrength, false, true);
-                }
-
-                if (sculkEffect) {
-                    int radius = 3;
-                    for (int x = -radius; x <= radius; x++) {
-                        for (int z = -radius; z <= radius; z++) {
-                            if (x * x + z * z <= radius * radius) {
-                                Location blockLocation = hitLocation.clone().add(x, -1, z);
-                                Block block = blockLocation.getBlock();
-                                if (block.getType() != Material.AIR && isDestructible(block.getType()) && random.nextDouble() <= 0.6) {
-                                    block.setType(Material.SCULK);
-                                }
+            public void onProjectileHit(org.bukkit.event.entity.ProjectileHitEvent event) {
+                if (event.getEntity().equals(projectile)) {
+                    // Start the despawn timer after collision
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            if (projectile.isValid()) {
+                                projectile.remove();
                             }
                         }
+                    }.runTaskLater(plugin, despawnTimeAfterHit * 20L); // Convert seconds to ticks
+
+                    // Handle explosion if enabled
+                    if (makesExplosion) {
+                        projectile.getWorld().createExplosion(projectile.getLocation(), explosionStrength, false, false);
                     }
-                }
 
-                // Apply damage to entities
-                if (event.getHitEntity() instanceof LivingEntity livingEntity) {
-                    double finalDamage = useSpeedBasedDamage ? damage * arrow.getVelocity().length() : damage;
-                    livingEntity.damage(finalDamage, shooter);
+                    // Unregister the event listener
+                    org.bukkit.event.HandlerList.unregisterAll(this);
                 }
-
-                arrow.remove();
-                org.bukkit.event.HandlerList.unregisterAll(this);
             }
         }, plugin);
-    }
-
-    private static boolean isDestructible(Material material) {
-        return switch (material) {
-            case BEDROCK, OBSIDIAN, ENDER_CHEST, ANVIL, ENCHANTING_TABLE -> false;
-            default -> true;
-        };
     }
 }
