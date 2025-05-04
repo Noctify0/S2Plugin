@@ -83,7 +83,8 @@ public class PistolBehavior implements Listener {
                 EntityType.ARROW,
                 true,
                 "bullet",
-                3
+                3,
+                0
         );
 
         // Play sound for shooting

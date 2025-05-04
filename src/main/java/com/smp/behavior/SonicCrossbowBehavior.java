@@ -58,9 +58,9 @@ public class SonicCrossbowBehavior implements Listener {
                 EntityType.ARROW,
                 false,
                 null,
-                3
+                3,
+                1
         );
-
         event.setCancelled(true);
     }
 }

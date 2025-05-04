@@ -29,11 +29,11 @@ public class Pistol {
                     ChatColor.GRAY + "ᴀɴ ᴀᴍᴇʀɪᴄᴀɴ ꜰɪʀᴇᴀʀᴍ ᴡɪᴛʜ ᴀ ",
                     ChatColor.GRAY + "10-ʙᴜʟʟᴇᴛ ᴍᴀɢᴀᴢɪɴᴇ.",
                     "",
-                    ChatColor.YELLOW + "Magazine: " + shotsLeft + "/" + MAX_MAGAZINE_CAPACITY,
+                    ChatColor.YELLOW + "ᴍᴀɢᴀᴢɪɴᴇ: " + shotsLeft + "/" + MAX_MAGAZINE_CAPACITY,
                     "",
                     ChatColor.GREEN + "ᴜɴᴄᴏᴍᴍᴏɴ",
-                    ChatColor.WHITE + "ꜰᴜʟʟ ᴀᴜᴛᴏ" + ChatColor.GRAY + "ʜᴏʟᴅ ʀɪɢʜᴛ ᴄʟɪᴄᴋ ᴛᴏ ꜱʜᴏᴏᴛ ʀᴀᴘɪᴅʟʏ",
-                    ChatColor.WHITE + "ꜱʜᴏᴏᴛ" + ChatColor.GRAY + "ʀɪɢʜᴛ ᴄʟɪᴄᴋ ᴛᴏ ꜰɪʀᴇ ᴀ ꜱᴍᴀʟʟ ʙᴜʟʟᴇᴛ",
+                    ChatColor.WHITE + "ꜰᴜʟʟ ᴀᴜᴛᴏ" + ChatColor.GRAY + " ʜᴏʟᴅ ʀɪɢʜᴛ ᴄʟɪᴄᴋ ᴛᴏ ꜱʜᴏᴏᴛ ʀᴀᴘɪᴅʟʏ",
+                    ChatColor.WHITE + "ꜱʜᴏᴏᴛ" + ChatColor.GRAY + " ʀɪɢʜᴛ ᴄʟɪᴄᴋ ᴛᴏ ꜰɪʀᴇ ᴀ ꜱᴍᴀʟʟ ʙᴜʟʟᴇᴛ",
                     ChatColor.DARK_GRAY + "1/3 ꜱᴇᴄᴏɴᴅ ᴄᴏᴏʟᴅᴏᴡɴ"
             ));
             pistol.setItemMeta(meta);

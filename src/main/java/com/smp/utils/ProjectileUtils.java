@@ -36,7 +36,8 @@ public class ProjectileUtils implements Listener {
             EntityType projectileType,
             boolean useModelEngine,
             String modelId,
-            int despawnTime
+            int despawnTime,
+            int piercingLevel // New parameter for piercing level
     ) {
         Location spawnLocation = shooter.getEyeLocation();
         Entity projectile = spawnLocation.getWorld().spawnEntity(spawnLocation, projectileType);
@@ -48,6 +49,7 @@ public class ProjectileUtils implements Listener {
             arrow.setCustomName("custom_projectile");
             arrow.setCustomNameVisible(false);
             arrow.setKnockbackStrength(knockbackStrength);
+            arrow.setPierceLevel(piercingLevel); // Set the piercing level
 
             if (!speedBasedDamage) {
                 arrow.setMetadata("custom_damage", new FixedMetadataValue(plugin, damage));

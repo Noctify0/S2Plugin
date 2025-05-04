@@ -4,6 +4,7 @@ import com.smp.behavior.*;
 import com.smp.items.*;
 import com.smp.utils.GammaUtils;
 import com.smp.listeners.LegendaryItemCraftListener;
+import com.smp.utils.ManaUtils;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -67,6 +68,7 @@ public final class  Smp extends JavaPlugin implements Listener {
 
         // Register commands
         GammaUtils gammaUtils = new GammaUtils();
+        ManaUtils.initialize(this);
         getCommand("nv").setExecutor(gammaUtils);
         getCommand("nightvision").setExecutor(gammaUtils);
 
