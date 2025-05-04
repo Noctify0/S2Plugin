@@ -1,6 +1,6 @@
 name: smp
 depend: [EntitySize]
-version: '1.9.8'
+version: '1.10.14'
 main: com.smp.Smp
 api-version: '1.21'
 authors: [ _Noctify ]

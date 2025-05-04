@@ -38,7 +38,7 @@ public final class  Smp extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new ShrinkRayBehavior(this), this);
         Bukkit.getPluginManager().registerEvents(new LegendaryItemCraftListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SonicCrossbowBehavior(this), this);
-        Bukkit.getPluginManager().registerEvents(new PistolBehavior(), this);
+        getServer().getPluginManager().registerEvents(new PistolBehavior(), this);
 
         // Register custom items
         customItems.put("excalibur", Excalibur.createItem());

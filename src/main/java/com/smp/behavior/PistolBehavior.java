@@ -1,11 +1,13 @@
 package com.smp.behavior;
 
 import com.smp.Smp;
+import com.smp.items.Pistol;
 import com.smp.utils.CustomItemUtils;
 import com.smp.utils.ProjectileUtils;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,8 +29,8 @@ public class PistolBehavior implements Listener {
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInMainHand();
 
-        // Use CustomItemUtils to check if the item is the custom Pistol
-        if (!CustomItemUtils.isCustomItem(item, Material.FLINT, "&6Pistol", 6)) {
+        // Updated to match the new name "ɢʟᴏᴄᴋ 19" in ChatColor.GREEN
+        if (!CustomItemUtils.isCustomItem(item, Material.FLINT, "&aɢʟᴏᴄᴋ 19", 6)) {
             return;
         }
 
@@ -36,13 +38,13 @@ public class PistolBehavior implements Listener {
         ammo.putIfAbsent(playerId, 0);
 
         if (event.getAction().toString().contains("RIGHT_CLICK")) {
-            shoot(player);
+            shoot(player, item);
         } else if (event.getAction().toString().contains("LEFT_CLICK")) {
-            reload(player);
+            reload(player, item);
         }
     }
 
-    private void shoot(Player player) {
+    private void shoot(Player player, ItemStack pistol) {
         UUID playerId = player.getUniqueId();
         long currentTime = System.currentTimeMillis();
         long lastShot = lastShotTime.getOrDefault(playerId, 0L);
@@ -62,26 +64,34 @@ public class PistolBehavior implements Listener {
         ammo.put(playerId, currentAmmo - 1);
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.YELLOW + "Ammo: " + ammo.get(playerId) + "/" + maxAmmo));
 
+        // Update the pistol lore to reflect the new ammo count
+        Pistol.updateLore(pistol, ammo.get(playerId));
+
         // Use ProjectileUtils to create a custom bullet
         ProjectileUtils.createCustomProjectile(
-                Smp.getInstance(), // Plugin instance
-                player,            // Shooter
-                Particle.FLAME,    // Trail particle
-                5,                 // Despawn time in seconds
-                false,             // Is on fire
-                false,             // Makes explosion
-                0,                 // Explosion strength
-                false,             // Sculk effect
-                5.0,               // Speed of the bullet
-                4.0,               // Damage
-                false              // Use speed-based damage
+                Smp.getInstance(),
+                player,
+                Particle.FLAME,
+                5,
+                false,
+                false,
+                0,
+                false,
+                5.0,
+                4.0,
+                false,
+                EntityType.ARROW,
+                true,
+                "bullet",
+                3
         );
 
         // Play sound for shooting
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
+        player.sendMessage(ChatColor.GREEN + "Shot fired!");
     }
 
-    private void reload(Player player) {
+    private void reload(Player player, ItemStack pistol) {
         UUID playerId = player.getUniqueId();
         int currentAmmo = ammo.get(playerId);
 
@@ -102,6 +112,9 @@ public class PistolBehavior implements Listener {
         removeBullets(player, bulletsToReload);
         ammo.put(playerId, currentAmmo + bulletsToReload);
 
+        // Update the pistol lore to reflect the new ammo count
+        Pistol.updateLore(pistol, ammo.get(playerId));
+
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.YELLOW + "Ammo: " + ammo.get(playerId) + "/" + maxAmmo));
         player.sendMessage(ChatColor.GREEN + "Reloading...");
 
@@ -116,14 +129,14 @@ public class PistolBehavior implements Listener {
 
     private int countBullets(Player player) {
         return player.getInventory().all(Material.IRON_NUGGET).values().stream()
-                .filter(item -> item.getItemMeta() != null && item.getItemMeta().getDisplayName().equals(ChatColor.GRAY + "Bullet"))
+                .filter(item -> CustomItemUtils.isCustomItem(item, Material.IRON_NUGGET, ChatColor.GRAY + "ʙᴜʟʟᴇᴛ", 1))
                 .mapToInt(ItemStack::getAmount)
                 .sum();
     }
 
     private void removeBullets(Player player, int amount) {
         for (ItemStack item : player.getInventory().all(Material.IRON_NUGGET).values()) {
-            if (item.getItemMeta() != null && item.getItemMeta().getDisplayName().equals(ChatColor.GRAY + "Bullet")) {
+            if (CustomItemUtils.isCustomItem(item, Material.IRON_NUGGET, ChatColor.GRAY + "ʙᴜʟʟᴇᴛ", 1)) {
                 int stackSize = item.getAmount();
                 if (stackSize <= amount) {
                     player.getInventory().remove(item);

@@ -7,19 +7,37 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Collections;
+import java.util.Arrays;
 
 public class Pistol {
+    private static final int MAX_MAGAZINE_CAPACITY = 10;
+
     public static ItemStack createItem() {
         ItemStack pistol = new ItemStack(Material.FLINT);
+        updateLore(pistol, MAX_MAGAZINE_CAPACITY); // Initialize with full magazine
+        return pistol;
+    }
+
+    public static void updateLore(ItemStack pistol, int shotsLeft) {
+        if (pistol == null || pistol.getType() != Material.FLINT) return;
+
         ItemMeta meta = pistol.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(ChatColor.GOLD + "Pistol");
+            meta.setDisplayName(ChatColor.GREEN + "ɢʟᴏᴄᴋ 19");
             meta.setCustomModelData(6);
-            meta.setLore(Collections.singletonList(ChatColor.GRAY + "A simple firearm with a 10-bullet magazine."));
+            meta.setLore(Arrays.asList(
+                    ChatColor.GRAY + "ᴀɴ ᴀᴍᴇʀɪᴄᴀɴ ꜰɪʀᴇᴀʀᴍ ᴡɪᴛʜ ᴀ ",
+                    ChatColor.GRAY + "10-ʙᴜʟʟᴇᴛ ᴍᴀɢᴀᴢɪɴᴇ.",
+                    "",
+                    ChatColor.YELLOW + "Magazine: " + shotsLeft + "/" + MAX_MAGAZINE_CAPACITY,
+                    "",
+                    ChatColor.GREEN + "ᴜɴᴄᴏᴍᴍᴏɴ",
+                    ChatColor.WHITE + "ꜰᴜʟʟ ᴀᴜᴛᴏ" + ChatColor.GRAY + "ʜᴏʟᴅ ʀɪɢʜᴛ ᴄʟɪᴄᴋ ᴛᴏ ꜱʜᴏᴏᴛ ʀᴀᴘɪᴅʟʏ",
+                    ChatColor.WHITE + "ꜱʜᴏᴏᴛ" + ChatColor.GRAY + "ʀɪɢʜᴛ ᴄʟɪᴄᴋ ᴛᴏ ꜰɪʀᴇ ᴀ ꜱᴍᴀʟʟ ʙᴜʟʟᴇᴛ",
+                    ChatColor.DARK_GRAY + "1/3 ꜱᴇᴄᴏɴᴅ ᴄᴏᴏʟᴅᴏᴡɴ"
+            ));
             pistol.setItemMeta(meta);
         }
-        return pistol;
     }
 
     public static ShapedRecipe getRecipe(NamespacedKey key) {

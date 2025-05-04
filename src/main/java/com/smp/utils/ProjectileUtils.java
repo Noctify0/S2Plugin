@@ -1,74 +1,100 @@
 package com.smp.utils;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class ProjectileUtils {
+public class ProjectileUtils implements Listener {
+
+    private static Plugin plugin;
+
+    public static void initialize(Plugin pluginInstance) {
+        plugin = pluginInstance;
+        Bukkit.getPluginManager().registerEvents(new ProjectileUtils(), plugin);
+    }
 
     public static void createCustomProjectile(
             Plugin plugin,
             Player shooter,
             Particle trailParticle,
-            int despawnTimeAfterHit, // Time in seconds after hitting something
-            boolean isOnFire,
-            boolean makesExplosion,
-            float explosionStrength,
-            boolean sculkEffect,
+            int particleCount,
+            boolean gravity,
+            boolean glowing,
+            int knockbackStrength,
+            boolean silent,
             double speed,
             double damage,
-            boolean useSpeedBasedDamage
+            boolean speedBasedDamage,
+            EntityType projectileType,
+            boolean useModelEngine,
+            String modelId,
+            int despawnTime
     ) {
-        // Spawn the projectile
-        Projectile projectile = shooter.launchProjectile(org.bukkit.entity.Snowball.class);
-        projectile.setVelocity(shooter.getLocation().getDirection().multiply(speed));
-        projectile.setShooter(shooter);
+        Location spawnLocation = shooter.getEyeLocation();
+        Entity projectile = spawnLocation.getWorld().spawnEntity(spawnLocation, projectileType);
+        projectile.setGravity(gravity);
+        projectile.setGlowing(glowing);
+        projectile.setSilent(silent);
 
-        if (isOnFire) {
-            projectile.setFireTicks(100);
+        if (projectile instanceof Arrow arrow) {
+            arrow.setCustomName("custom_projectile");
+            arrow.setCustomNameVisible(false);
+            arrow.setKnockbackStrength(knockbackStrength);
+
+            if (!speedBasedDamage) {
+                arrow.setMetadata("custom_damage", new FixedMetadataValue(plugin, damage));
+            }
         }
 
-        // Add a trail effect
+        Vector direction = spawnLocation.getDirection().normalize().multiply(speed);
+        projectile.setVelocity(direction);
+
+        // Schedule particle trail
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (!projectile.isValid() || projectile.isDead()) {
+                if (projectile.isDead() || !projectile.isValid()) {
                     cancel();
                     return;
                 }
-                projectile.getWorld().spawnParticle(trailParticle, projectile.getLocation(), 1, 0, 0, 0, 0);
+
+                projectile.getWorld().spawnParticle(trailParticle, projectile.getLocation(), particleCount, 0, 0, 0, 0);
             }
         }.runTaskTimer(plugin, 0L, 1L);
 
-        // Listen for collision events
-        Bukkit.getPluginManager().registerEvents(new org.bukkit.event.Listener() {
-            @org.bukkit.event.EventHandler
-            public void onProjectileHit(org.bukkit.event.entity.ProjectileHitEvent event) {
-                if (event.getEntity().equals(projectile)) {
-                    // Start the despawn timer after collision
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            if (projectile.isValid()) {
-                                projectile.remove();
-                            }
-                        }
-                    }.runTaskLater(plugin, despawnTimeAfterHit * 20L); // Convert seconds to ticks
-
-                    // Handle explosion if enabled
-                    if (makesExplosion) {
-                        projectile.getWorld().createExplosion(projectile.getLocation(), explosionStrength, false, false);
+        // Schedule projectile despawn if despawnTime is greater than 0
+        if (despawnTime > 0) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (!projectile.isDead() && projectile.isValid()) {
+                        projectile.remove();
                     }
+                }
+            }.runTaskLater(plugin, despawnTime * 20L); // Convert seconds to ticks
+        }
+    }
 
-                    // Unregister the event listener
-                    org.bukkit.event.HandlerList.unregisterAll(this);
+    @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Arrow arrow && "custom_projectile".equals(arrow.getCustomName())) {
+            if (arrow.getShooter() instanceof Player shooter) {
+                if (arrow.hasMetadata("custom_damage")) {
+                    event.setCancelled(true); // Cancel vanilla damage
+                    double customDamage = arrow.getMetadata("custom_damage").get(0).asDouble();
+                    if (event.getEntity() instanceof LivingEntity target) {
+                        target.damage(customDamage, shooter); // Apply custom damage
+                    }
                 }
             }
-        }, plugin);
+        }
     }
 }

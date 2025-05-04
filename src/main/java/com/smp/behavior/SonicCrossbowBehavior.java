@@ -4,6 +4,7 @@ import com.smp.utils.CustomItemUtils;
 import com.smp.utils.ProjectileUtils;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -49,11 +50,15 @@ public class SonicCrossbowBehavior implements Listener {
                 3,
                 false,
                 true,
-                3.0F,
+                3,
                 true,
                 2.0,
                 5.0,
-                false // Use speed-based damage
+                false,
+                EntityType.ARROW,
+                false,
+                null,
+                3
         );
 
         event.setCancelled(true);

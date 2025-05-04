@@ -14,12 +14,13 @@ public class Bullet {
         ItemStack bullet = new ItemStack(Material.IRON_NUGGET, 5); // Set amount to 5
         ItemMeta meta = bullet.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(ChatColor.GRAY + "Bullet");
+            meta.setDisplayName(ChatColor.GRAY + "ʙᴜʟʟᴇᴛ");
             meta.setLore(Arrays.asList(
-                    ChatColor.DARK_GRAY + "Ammunition for the Pistol.",
-                    ChatColor.DARK_GRAY + "Crafted with precision.",
-                    ChatColor.DARK_GRAY + "Handle with care."
+                    ChatColor.DARK_GRAY + "ᴀᴍᴍᴜɴɪᴛɪᴏɴ ꜰᴏʀ ᴛʜᴇ ᴘɪꜱᴛᴏʟ.",
+                    "",
+                    ChatColor.GRAY + "ᴄᴏᴍᴍᴏɴ"
             ));
+            meta.setCustomModelData(1); // Set custom model data to 1
             bullet.setItemMeta(meta);
         }
         return bullet;
